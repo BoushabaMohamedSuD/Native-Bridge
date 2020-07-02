@@ -67,7 +67,7 @@ const App = () => {
 
   return (
     <>
-      <ImageBackground source={require('./images/textured.png')} style={{
+      <ImageBackground source={require('./images/textured.jpg')} style={{
         flex: 1,
         // remove width and height to override fixed static size
         width: null,
