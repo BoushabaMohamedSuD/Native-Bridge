@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React, { useState } from 'react';
+import React, { useState, Component } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -36,17 +36,43 @@ import ImageBackground from 'react-native/Libraries/Image/ImageBackground';
 
 
 
+import { NativeEventEmitter, NativeModules } from 'react-native';
 
-const App = () => {
 
-  const [text, addText] = useState(["Hello"]);
-  const [counter, setCounter] = useState(0);
+class App extends Component {
 
+  //const [text, addText] = useState(["Hello"]);
+  //const [counter, setCounter] = useState(0);
+
+  constructor(props){
+    super(props);
+
+    this.state = {
+      text: "Nothing"
+    }
+    
+  }
+  
+  componentDidMount() {
+    
+    const eventEmitter = new NativeEventEmitter(NativeModules.ToastExample);
+    this.eventListener = eventEmitter.addListener('EventReminder', (event) => {
+      console.log(event)
+      console.log("event: "+event.bluetooth) 
+
+      let message = event.bluetooth;
+      this.setState({
+        text: message
+      });
+    });
+    
+  }
+  
   onPress = () => {
     console.log("Press");
     text.push("Awesome" + " " + counter);
-    addText(text);
-    setCounter(counter + 1);
+    //addText(text);
+   // setCounter(counter + 1);
     ToastExample.show('Awesome', ToastExample.SHORT);
 
 
@@ -64,8 +90,8 @@ const App = () => {
     ToastExample.show('Turn Off', ToastExample.SHORT);
 
   }
-
-  return (
+  render(){
+     return (
     <>
       <ImageBackground source={require('./images/textured.jpg')} style={{
         flex: 1,
@@ -127,7 +153,7 @@ const App = () => {
           style={{
             marginTop: "20%"
           }}
-          onPress={onPress}
+          onPress={this.onPress}
           title="add random text"
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
@@ -139,7 +165,7 @@ const App = () => {
           style={{
             marginTop: "20%"
           }}
-          onPress={TurnOn}
+          onPress={this.TurnOn}
           title="Turn On Bleutooth"
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
@@ -151,7 +177,7 @@ const App = () => {
           style={{
             marginTop: "20%"
           }}
-          onPress={TurnOff}
+          onPress={this.TurnOff}
           title="Turn Off Bleutooth"
           color="#841584"
           accessibilityLabel="Learn more about this purple button"
@@ -163,10 +189,11 @@ const App = () => {
             marginBottom: 0,
             marginLeft: 'auto',
           }}>
+            <Text>
+                 {this.state.text}
+            </Text>
 
-          {text.map((t, i) => (
-            <Text key={i}> {t}</Text>
-          ))}
+        
 
         </View>
 
@@ -178,6 +205,10 @@ const App = () => {
 
     </>
   );
+    
+  }
+
+ 
 };
 
 const styles = StyleSheet.create({

@@ -20,6 +20,10 @@ import android.app.Activity;
 import androidx.core.app.NotificationCompat;
 import android.app.NotificationChannel;
 
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+
 public class BluetoothModule extends ReactContextBaseJavaModule {
     private static ReactApplicationContext reactContext;
 
@@ -30,6 +34,14 @@ public class BluetoothModule extends ReactContextBaseJavaModule {
         reactContext = context;
         bAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        // For sending Events
+
+    }
+
+    // FOR SENDING EVENTS
+
+    private void sendEvent(ReactContext reactContext, String eventName, WritableMap params) {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
     }
 
     @Override
@@ -48,6 +60,10 @@ public class BluetoothModule extends ReactContextBaseJavaModule {
 
         // startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE),
         // 1);
+        WritableMap params = Arguments.createMap();
+
+        params.putString("bluetooth", "turnOn");
+        this.sendEvent(reactContext, "EventReminder", params);
 
     }
 
@@ -83,6 +99,10 @@ public class BluetoothModule extends ReactContextBaseJavaModule {
                 .getSystemService(getReactApplicationContext().NOTIFICATION_SERVICE);
         // It will display the notification in notification bar
         notificationManager.notify(45, mBuilder.build());
+
+        WritableMap params = Arguments.createMap();
+        params.putString("bluetooth", "turnOff");
+        this.sendEvent(reactContext, "EventReminder", params);
 
     }
 
